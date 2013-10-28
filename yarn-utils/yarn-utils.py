@@ -44,14 +44,14 @@ def getMinContainerSize(memory):
   pass
 
 def getReservedStackMemory(memory):
-  if (reservedHBase.has_key(memory)):
-    return reservedHBase[memory]
+  if (reservedStack.has_key(memory)):
+    return reservedStack[memory]
   if (memory <= 4):
     ret = 1
   elif (memory >= 512):
     ret = 64
   else:
-    ret = 0
+    ret = 1
   return ret
 
 def getReservedHBaseMem(memory):
@@ -62,7 +62,7 @@ def getReservedHBaseMem(memory):
   elif (memory >= 512):
     ret = 64
   else:
-    ret = 0
+    ret = 2
   return ret
                     
 def main():
@@ -73,6 +73,10 @@ def main():
   log.addHandler(out_hdlr)
   log.setLevel(logging.INFO)
   parser = optparse.OptionParser()
+  memory = 0
+  cores = 0
+  disks = 0
+  hbaseEnabled = True
   parser.add_option('-c', '--cores', default = 4,
                      help = 'Number of cores on each host')
   parser.add_option('-m', '--memory', default = 64, 
@@ -83,11 +87,12 @@ def main():
                     help = 'True if HBase is installed, False is not')
   (options, args) = parser.parse_args()
   
-  cores = options.cores
-  memory = options.memory
-  disks = options.disks
+  cores = int (options.cores)
+  memory = int (options.memory)
+  disks = int (options.disks)
   hbaseEnabled = options.hbase
-  log.info("Using cores=" +  str(cores) + " memory=" + str(memory) + "(GB)" +
+  
+  log.info("Using cores=" +  str(cores) + " memory=" + str(memory) + "GB" +
             " disks=" + str(disks) + " hbase=" + str(hbaseEnabled))
   minContainerSize = getMinContainerSize(memory)
   reservedStackMemory = getReservedStackMemory(memory)
@@ -95,19 +100,22 @@ def main():
   if (hbaseEnabled):
     reservedHBaseMemory = getReservedHBaseMem(memory)
   reservedMem = reservedStackMemory + reservedHBaseMemory
-  log.info("Profile: cores=" + str(cores) + " memory=" + str(memory) 
+  usableMem = memory - reservedMem
+  log.info("Profile: cores=" + str(cores) + " memory=" + str(memory) + "GB"
            + " reserved=" + str(reservedMem) + "GB" + " usableMem="
-           + str(memory - reservedMem) + "GB" + " disks=" + str(disks))
-  memory -= (reservedStackMemory + reservedHBaseMemory)
+           + str(usableMem) + "GB" + " disks=" + str(disks))
+  memory -= (reservedMem)
   memory *= GB
-  containers = max(2* cores, min(abs(math.ceil(1.8 * disks)), memory/minContainerSize))
+  containers = int (max(2 * cores,
+                         min(math.ceil(1.8 * float(disks)),
+                              memory/minContainerSize)))
   container_ram =  abs(memory/containers)
   if (container_ram > GB):
     container_ram = container_ram / 512 * 512
   log.info("Num Container=" + str(containers))
-  log.info("Container Ram=" + str(container_ram))
-  log.info("User Ram=" + str(containers*container_ram/float(GB)))
-  log.info("Unused Ram=" + str(float(memory) - (containers*container_ram)/GB))
+  log.info("Container Ram=" + str(container_ram) + "MB")
+  log.info("Used Ram=" + str(int (containers*container_ram/float(GB))) + "GB")
+  log.info("Unused Ram=" + str(reservedMem) + "GB")
   log.info("yarn.scheduler.minimum-allocation-mb=" + str(container_ram))
   log.info("yarn.scheduler.maximum-allocation-mb=" + str(containers*container_ram))
   log.info("yarn.nodemanager.resource.memory-mb=" + str(containers*container_ram))
@@ -115,12 +123,12 @@ def main():
   reduce_memory = 2*container_ram if (container_ram <= 2048) else container_ram
   am_memory = max(map_memory, reduce_memory)
   log.info("mapreduce.map.memory.mb=" + str(map_memory))
-  log.info("mapreduce.map.java.opts=" + str(abs(0.8 * map_memory)))
+  log.info("mapreduce.map.java.opts=" + str(int(0.8 * map_memory)))
   log.info("mapreduce.reduce.memory.mb=" + str(reduce_memory))
-  log.info("mapreduce.reduce.java.opts=" + str(abs(0.8 * reduce_memory)))
+  log.info("mapreduce.reduce.java.opts=" + str(int(0.8 * reduce_memory)))
   log.info("yarn.app.mapreduce.am.resource.mb=" + str(am_memory))
-  log.info("yarn.app.mapreduce.am.command-opts=" + str(abs(0.8*am_memory)))
-  log.info("io.sort.mb=" + str(abs(0.4 * map_memory)))
+  log.info("yarn.app.mapreduce.am.command-opts=" + str(int(0.8*am_memory)))
+  log.info("io.sort.mb=" + str(int(0.4 * map_memory)))
   pass
 
 if __name__ == '__main__':
