@@ -77,7 +77,7 @@ def main():
   cores = 0
   disks = 0
   hbaseEnabled = True
-  parser.add_option('-c', '--cores', default = 4,
+  parser.add_option('-c', '--cores', default = 16,
                      help = 'Number of cores on each host')
   parser.add_option('-m', '--memory', default = 64, 
                     help = 'Amount of Memory on each host in GB')
@@ -123,11 +123,11 @@ def main():
   reduce_memory = 2*container_ram if (container_ram <= 2048) else container_ram
   am_memory = max(map_memory, reduce_memory)
   log.info("mapreduce.map.memory.mb=" + str(map_memory))
-  log.info("mapreduce.map.java.opts=" + str(int(0.8 * map_memory)))
+  log.info("mapreduce.map.java.opts=-Xmx" + str(int(0.8 * map_memory)) +"m")
   log.info("mapreduce.reduce.memory.mb=" + str(reduce_memory))
-  log.info("mapreduce.reduce.java.opts=" + str(int(0.8 * reduce_memory)))
+  log.info("mapreduce.reduce.java.opts=-Xmx" + str(int(0.8 * reduce_memory)) + "m")
   log.info("yarn.app.mapreduce.am.resource.mb=" + str(am_memory))
-  log.info("yarn.app.mapreduce.am.command-opts=" + str(int(0.8*am_memory)))
+  log.info("yarn.app.mapreduce.am.command-opts=-Xmx" + str(int(0.8*am_memory)) + "m")
   log.info("io.sort.mb=" + str(int(0.4 * map_memory)))
   pass
 
