@@ -22,6 +22,7 @@ from pprint import pprint
 import logging
 import sys
 import math
+import ast
 
 ''' Reserved for OS + DN + NM,  Map: Memory => Reservation '''
 reservedStack = { 4:1, 8:2, 16:2, 24:4, 48:6, 64:8, 72:8, 96:12, 
@@ -90,7 +91,7 @@ def main():
   cores = int (options.cores)
   memory = int (options.memory)
   disks = int (options.disks)
-  hbaseEnabled = options.hbase
+  hbaseEnabled = ast.literal_eval(options.hbase)
   
   log.info("Using cores=" +  str(cores) + " memory=" + str(memory) + "GB" +
             " disks=" + str(disks) + " hbase=" + str(hbaseEnabled))
