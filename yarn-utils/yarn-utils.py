@@ -102,14 +102,20 @@ def main():
     reservedHBaseMemory = getReservedHBaseMem(memory)
   reservedMem = reservedStackMemory + reservedHBaseMemory
   usableMem = memory - reservedMem
-  log.info("Profile: cores=" + str(cores) + " memory=" + str(memory) + "GB"
-           + " reserved=" + str(reservedMem) + "GB" + " usableMem="
-           + str(usableMem) + "GB" + " disks=" + str(disks))
   memory -= (reservedMem)
+  if (memory < 1):
+    memory = 1
+    reservedMem = max(0, memory - reservedMem)
+    
   memory *= GB
+  
   containers = int (max(2 * cores,
                          min(math.ceil(1.8 * float(disks)),
                               memory/minContainerSize)))
+  log.info("Profile: cores=" + str(cores) + " memory=" + str(memory) + "GB"
+           + " reserved=" + str(reservedMem) + "MB" + " usableMem="
+           + str(usableMem) + "GB" + " disks=" + str(disks))
+
   container_ram =  abs(memory/containers)
   if (container_ram > GB):
     container_ram = container_ram / 512 * 512
