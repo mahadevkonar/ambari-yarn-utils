@@ -109,11 +109,11 @@ def main():
     
   memory *= GB
   
-  containers = int (max(2 * cores,
+  containers = int (min(2 * cores,
                          min(math.ceil(1.8 * float(disks)),
                               memory/minContainerSize)))
-  log.info("Profile: cores=" + str(cores) + " memory=" + str(memory) + "GB"
-           + " reserved=" + str(reservedMem) + "MB" + " usableMem="
+  log.info("Profile: cores=" + str(cores) + " memory=" + str(memory) + "MB"
+           + " reserved=" + str(reservedMem) + "GB" + " usableMem="
            + str(usableMem) + "GB" + " disks=" + str(disks))
 
   container_ram =  abs(memory/containers)
