@@ -84,7 +84,7 @@ def main():
                     help = 'Amount of Memory on each host in GB')
   parser.add_option('-d', '--disks', default = 4, 
                     help = 'Number of disks on each host')
-  parser.add_option('-k', '--hbase', default = True,
+  parser.add_option('-k', '--hbase', default = "True",
                     help = 'True if HBase is installed, False is not')
   (options, args) = parser.parse_args()
   
@@ -103,8 +103,8 @@ def main():
   reservedMem = reservedStackMemory + reservedHBaseMemory
   usableMem = memory - reservedMem
   memory -= (reservedMem)
-  if (memory < 1):
-    memory = 1
+  if (memory < 2):
+    memory = 2
     reservedMem = max(0, memory - reservedMem)
     
   memory *= GB
