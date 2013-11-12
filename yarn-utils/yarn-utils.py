@@ -118,7 +118,7 @@ def main():
 
   container_ram =  abs(memory/containers)
   if (container_ram > GB):
-    container_ram = container_ram / 512 * 512
+    container_ram = int(math.floor(container_ram / 512)) * 512
   log.info("Num Container=" + str(containers))
   log.info("Container Ram=" + str(container_ram) + "MB")
   log.info("Used Ram=" + str(int (containers*container_ram/float(GB))) + "GB")
