@@ -115,7 +115,9 @@ def main():
   log.info("Profile: cores=" + str(cores) + " memory=" + str(memory) + "MB"
            + " reserved=" + str(reservedMem) + "GB" + " usableMem="
            + str(usableMem) + "GB" + " disks=" + str(disks))
-
+  if (containers <= 2):
+    containers = 3
+    
   container_ram =  abs(memory/containers)
   if (container_ram > GB):
     container_ram = int(math.floor(container_ram / 512)) * 512
