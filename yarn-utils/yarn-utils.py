@@ -112,11 +112,12 @@ def main():
   containers = int (min(2 * cores,
                          min(math.ceil(1.8 * float(disks)),
                               memory/minContainerSize)))
+  if (containers <= 2):
+    containers = 3
+
   log.info("Profile: cores=" + str(cores) + " memory=" + str(memory) + "MB"
            + " reserved=" + str(reservedMem) + "GB" + " usableMem="
            + str(usableMem) + "GB" + " disks=" + str(disks))
-  if (containers <= 2):
-    containers = 3
     
   container_ram =  abs(memory/containers)
   if (container_ram > GB):
