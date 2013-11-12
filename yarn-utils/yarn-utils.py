@@ -109,9 +109,9 @@ def main():
     
   memory *= GB
   
-  containers = int (min(2 * cores,
+  containers = int (max(3, min(2 * cores,
                          min(math.ceil(1.8 * float(disks)),
-                              memory/minContainerSize)))
+                              memory/minContainerSize))))
   log.info("Profile: cores=" + str(cores) + " memory=" + str(memory) + "MB"
            + " reserved=" + str(reservedMem) + "GB" + " usableMem="
            + str(usableMem) + "GB" + " disks=" + str(disks))
@@ -128,7 +128,7 @@ def main():
   log.info("yarn.nodemanager.resource.memory-mb=" + str(containers*container_ram))
   map_memory = container_ram
   reduce_memory = 2*container_ram if (container_ram <= 2048) else container_ram
-  am_memory = max(map_memory, reduce_memory)
+  am_memory = min(map_memory, reduce_memory)
   log.info("mapreduce.map.memory.mb=" + str(map_memory))
   log.info("mapreduce.map.java.opts=-Xmx" + str(int(0.8 * map_memory)) +"m")
   log.info("mapreduce.reduce.memory.mb=" + str(reduce_memory))
