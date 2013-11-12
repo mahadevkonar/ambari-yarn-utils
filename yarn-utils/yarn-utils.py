@@ -130,8 +130,10 @@ def main():
   log.info("yarn.scheduler.maximum-allocation-mb=" + str(containers*container_ram))
   log.info("yarn.nodemanager.resource.memory-mb=" + str(containers*container_ram))
   map_memory = container_ram
-  reduce_memory = 2*container_ram if (container_ram <= 2048) else container_ram
-  am_memory = max(map_memory, reduce_memory)
+  
+  reduce_memory = container_ram
+  
+  am_memory = min(map_memory, reduce_memory)
   log.info("mapreduce.map.memory.mb=" + str(map_memory))
   log.info("mapreduce.map.java.opts=-Xmx" + str(int(0.8 * map_memory)) +"m")
   log.info("mapreduce.reduce.memory.mb=" + str(reduce_memory))
