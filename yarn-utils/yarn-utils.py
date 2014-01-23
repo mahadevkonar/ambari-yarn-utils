@@ -135,7 +135,7 @@ def main():
   log.info("mapreduce.reduce.java.opts=-Xmx" + str(int(0.8 * reduce_memory)) + "m")
   log.info("yarn.app.mapreduce.am.resource.mb=" + str(am_memory))
   log.info("yarn.app.mapreduce.am.command-opts=-Xmx" + str(int(0.8*am_memory)) + "m")
-  log.info("mapreduce.task.io.sort.mb=" + str(int(0.4 * map_memory)))
+  log.info("mapreduce.task.io.sort.mb=" + str(int(min(0.4 * map_memory, 1024))))
   pass
 
 if __name__ == '__main__':
