@@ -103,8 +103,8 @@ def main():
   reservedMem = reservedStackMemory + reservedHBaseMemory
   usableMem = memory - reservedMem
   memory -= (reservedMem)
-  if (memory < 1):
-    memory = 1
+  if (memory < 2):
+    memory = 2 
     reservedMem = max(0, memory - reservedMem)
     
   memory *= GB
@@ -126,14 +126,14 @@ def main():
   log.info("yarn.scheduler.minimum-allocation-mb=" + str(container_ram))
   log.info("yarn.scheduler.maximum-allocation-mb=" + str(containers*container_ram))
   log.info("yarn.nodemanager.resource.memory-mb=" + str(containers*container_ram))
-  map_memory = container_ram
-  reduce_memory = 2*container_ram if (container_ram <= 2048) else container_ram
+  map_memory = math.floor(container_ram / 2)
+  reduce_memory = container_ram
   am_memory = min(map_memory, reduce_memory)
-  log.info("mapreduce.map.memory.mb=" + str(map_memory))
+  log.info("mapreduce.map.memory.mb=" + str(int(map_memory)))
   log.info("mapreduce.map.java.opts=-Xmx" + str(int(0.8 * map_memory)) +"m")
-  log.info("mapreduce.reduce.memory.mb=" + str(reduce_memory))
+  log.info("mapreduce.reduce.memory.mb=" + str(int(reduce_memory)))
   log.info("mapreduce.reduce.java.opts=-Xmx" + str(int(0.8 * reduce_memory)) + "m")
-  log.info("yarn.app.mapreduce.am.resource.mb=" + str(am_memory))
+  log.info("yarn.app.mapreduce.am.resource.mb=" + str(int(am_memory)))
   log.info("yarn.app.mapreduce.am.command-opts=-Xmx" + str(int(0.8*am_memory)) + "m")
   log.info("mapreduce.task.io.sort.mb=" + str(int(min(0.4 * map_memory, 1024))))
   pass
