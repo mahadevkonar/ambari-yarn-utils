@@ -45,7 +45,10 @@ def getMinContainerSize(memory):
   pass
 
 def getReservedStackMemory(memory):
-  if (reservedStack.has_key(memory)):
+  # has_key方法在python3之后删除了
+  # 使用 if memory in resvervedStack:
+  # if (reservedStack.has_key(memory)):
+  if (memory in reservedStack):
     return reservedStack[memory]
   if (memory <= 4):
     ret = 1
@@ -56,7 +59,7 @@ def getReservedStackMemory(memory):
   return ret
 
 def getReservedHBaseMem(memory):
-  if (reservedHBase.has_key(memory)):
+  if (memory in reservedHBase):
     return reservedHBase[memory]
   if (memory <= 4):
     ret = 1
